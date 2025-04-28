@@ -39,6 +39,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
         // Simulate Login Success
         alert(`Welcome back, ${email}! You have successfully logged in.`);
-        window.location.href = "dashboard.html"; // Redirect after login (adjust as needed)
+        window.location.href = "index.html"; // Redirect after login (adjust as needed)
     });
 });

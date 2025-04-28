@@ -29,6 +29,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (valid) {
             alert("Registration successful!");
             form.submit();
+            window.location.href = "login.html";
         }
     }
 

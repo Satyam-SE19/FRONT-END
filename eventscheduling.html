@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Study Platform - Event Scheduling</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Header -->
+        <header class="mb-8">
+            <h1 class="text-3xl font-bold text-indigo-700">
+                <a href="index.html">Study Groups</a></h1>
+            <p class="text-gray-600">Schedule and manage your academic events</p>
+        </header>
+
+        <!-- User Switch -->
+        <div class="flex justify-center mb-8">
+            <div class="bg-white rounded-lg shadow p-1">
+                <button id="studentViewBtn" class="px-4 py-2 rounded-md font-medium transition-all">Student View</button>
+                <button id="teacherViewBtn" class="px-4 py-2 rounded-md font-medium bg-indigo-600 text-white transition-all">Teacher View</button>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Left Column - Calendar -->
+            <div class="lg:col-span-2 bg-white rounded-lg shadow p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-xl font-semibold text-gray-800">Event Calendar</h2>
+                    <div class="flex space-x-2">
+                        <button id="prevMonth" class="p-2 rounded-full hover:bg-gray-100">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <button id="nextMonth" class="p-2 rounded-full hover:bg-gray-100">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                        <button id="todayBtn" class="px-3 py-1 rounded-md bg-indigo-100 text-indigo-700 hover:bg-indigo-200">
+                            Today
+                        </button>
+                    </div>
+                </div>
+                
+                <div id="currentMonth" class="text-lg font-medium text-center mb-4 text-gray-700">Month Year</div>
+                
+                <div class="grid grid-cols-7 gap-1 mb-2">
+                    <div class="text-center font-medium text-gray-500 py-2">Sun</div>
+                    <div class="text-center font-medium text-gray-500 py-2">Mon</div>
+                    <div class="text-center font-medium text-gray-500 py-2">Tue</div>
+                    <div class="text-center font-medium text-gray-500 py-2">Wed</div>
+                    <div class="text-center font-medium text-gray-500 py-2">Thu</div>
+                    <div class="text-center font-medium text-gray-500 py-2">Fri</div>
+                    <div class="text-center font-medium text-gray-500 py-2">Sat</div>
+                </div>
+                
+                <div id="calendarDays" class="grid grid-cols-7 gap-1">
+                    <!-- Calendar days will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Right Column - Events/Form -->
+            <div class="space-y-6">
+                <!-- Teacher View - Create Event Form -->
+                <div id="teacherForm" class="bg-white rounded-lg shadow p-6">
+                    <h2 class="text-xl font-semibold text-gray-800 mb-4">Schedule New Event</h2>
+                    <form id="eventForm">
+                        <div class="mb-4">
+                            <label for="eventTitle" class="block text-sm font-medium text-gray-700 mb-1">Event Title</label>
+                            <input type="text" id="eventTitle" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
+                        </div>
+                        <div class="mb-4">
+                            <label for="eventDescription" class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                            <textarea id="eventDescription" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"></textarea>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <label for="eventDate" class="block text-sm font-medium text-gray-700 mb-1">Date</label>
+                                <input type="date" id="eventDate" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
+                            </div>
+                            <div>
+                                <label for="eventTime" class="block text-sm font-medium text-gray-700 mb-1">Time</label>
+                                <input type="time" id="eventTime" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <label for="eventDuration" class="block text-sm font-medium text-gray-700 mb-1">Duration (minutes)</label>
+                            <input type="number" id="eventDuration" min="15" max="240" value="60" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
+                        </div>
+                        <div class="mb-4">
+                            <label for="eventType" class="block text-sm font-medium text-gray-700 mb-1">Event Type</label>
+                            <select id="eventType" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                <option value="lecture">Lecture</option>
+                                <option value="workshop">Workshop</option>
+                                <option value="exam">Exam</option>
+                                <option value="office-hours">Office Hours</option>
+                                <option value="group-study">Group Study</option>
+                            </select>
+                        </div>
+                        <div class="mb-4">
+                            <label for="eventParticipants" class="block text-sm font-medium text-gray-700 mb-1">Participants (for classes/groups)</label>
+                            <select id="eventParticipants" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" multiple>
+                                <option value="class-101">Class 101</option>
+                                <option value="class-202">Class 202</option>
+                                <option value="class-303">Class 303</option>
+                                <option value="study-group-a">Study Group A</option>
+                                <option value="study-group-b">Study Group B</option>
+                            </select>
+                        </div>
+                        <div class="flex justify-end space-x-3">
+                            <button type="reset" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">Clear</button>
+                            <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700">Schedule Event</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Student View - Upcoming Events -->
+                <div id="studentEvents" class="bg-white rounded-lg shadow p-6 hidden">
+                    <h2 class="text-xl font-semibold text-gray-800 mb-4">Your Upcoming Events</h2>
+                    <div id="upcomingEventsList" class="space-y-3">
+                        <!-- Events will be populated by JavaScript -->
+                        <div class="text-center text-gray-500 py-4">No upcoming events</div>
+                    </div>
+                </div>
+
+                <!-- Today's Events (Visible in both views) -->
+                <div class="bg-white rounded-lg shadow p-6">
+                    <h2 class="text-xl font-semibold text-gray-800 mb-4">Today's Events</h2>
+                    <div id="todaysEventsList" class="space-y-3">
+                        <!-- Events will be populated by JavaScript -->
+                        <div class="text-center text-gray-500 py-4">No events scheduled for today</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Event Modal -->
+    <div id="eventModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-md mx-4">
+            <div class="p-6">
+                <div class="flex justify-between items-start mb-4">
+                    <h3 id="modalEventTitle" class="text-xl font-semibold text-gray-800"></h3>
+                    <button id="closeModal" class="text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="space-y-3">
+                    <div>
+                        <span class="font-medium text-gray-700">Date & Time:</span>
+                        <span id="modalEventDateTime" class="ml-2"></span>
+                    </div>
+                    <div>
+                        <span class="font-medium text-gray-700">Duration:</span>
+                        <span id="modalEventDuration" class="ml-2"></span>
+                    </div>
+                    <div>
+                        <span class="font-medium text-gray-700">Type:</span>
+                        <span id="modalEventType" class="ml-2 capitalize"></span>
+                    </div>
+                    <div id="modalEventParticipantsContainer" class="hidden">
+                        <span class="font-medium text-gray-700">Participants:</span>
+                        <span id="modalEventParticipants" class="ml-2"></span>
+                    </div>
+                    <div>
+                        <span class="font-medium text-gray-700">Description:</span>
+                        <p id="modalEventDescription" class="mt-1 text-gray-600"></p>
+                    </div>
+                </div>
+                <div class="mt-6 flex justify-end space-x-3">
+                    <button id="deleteEventBtn" class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 hidden">Delete</button>
+                    <button id="joinEventBtn" class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 hidden">Join Event</button>
+                    <button id="closeModalBtn" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // DOM Elements
+            const calendarDays = document.getElementById('calendarDays');
+            const currentMonthEl = document.getElementById('currentMonth');
+            const prevMonthBtn = document.getElementById('prevMonth');
+            const nextMonthBtn = document.getElementById('nextMonth');
+            const todayBtn = document.getElementById('todayBtn');
+            const eventForm = document.getElementById('eventForm');
+            const studentViewBtn = document.getElementById('studentViewBtn');
+            const teacherViewBtn = document.getElementById('teacherViewBtn');
+            const teacherForm = document.getElementById('teacherForm');
+            const studentEvents = document.getElementById('studentEvents');
+            const upcomingEventsList = document.getElementById('upcomingEventsList');
+            const todaysEventsList = document.getElementById('todaysEventsList');
+            const eventModal = document.getElementById('eventModal');
+            const closeModal = document.getElementById('closeModal');
+            const closeModalBtn = document.getElementById('closeModalBtn');
+            const deleteEventBtn = document.getElementById('deleteEventBtn');
+            const joinEventBtn = document.getElementById('joinEventBtn');
+            
+            // Modal content elements
+            const modalEventTitle = document.getElementById('modalEventTitle');
+            const modalEventDateTime = document.getElementById('modalEventDateTime');
+            const modalEventDuration = document.getElementById('modalEventDuration');
+            const modalEventType = document.getElementById('modalEventType');
+            const modalEventDescription = document.getElementById('modalEventDescription');
+            const modalEventParticipants = document.getElementById('modalEventParticipants');
+            const modalEventParticipantsContainer = document.getElementById('modalEventParticipantsContainer');
+
+            // State variables
+            let currentDate = new Date();
+            let currentMonth = currentDate.getMonth();
+            let currentYear = currentDate.getFullYear();
+            let events = JSON.parse(localStorage.getItem('studyPlatformEvents')) || [];
+            let isTeacherView = true;
+            let selectedEvent = null;
+
+            // Initialize the calendar
+            function initCalendar() {
+                renderCalendar();
+                renderTodaysEvents();
+                if (!isTeacherView) {
+                    renderUpcomingEvents();
+                }
+            }
+
+            // Render the calendar
+            function renderCalendar() {
+                // Clear previous calendar days
+                calendarDays.innerHTML = '';
+                
+                // Set the current month and year
+                const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+                currentMonthEl.textContent = `${monthNames[currentMonth]} ${currentYear}`;
+                
+                // Get the first day of the month and the total days in the month
+                const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+                const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+                
+                // Get the days from the previous month to show
+                const prevMonthDays = new Date(currentYear, currentMonth, 0).getDate();
+                
+                // Create the calendar grid
+                let dayCount = 1;
+                let nextMonthDayCount = 1;
+                
+                // We need 6 rows to cover all possible month configurations (6 weeks)
+                for (let i = 0; i < 42; i++) {
+                    const dayElement = document.createElement('div');
+                    dayElement.className = 'h-24 p-1 border border-gray-100 overflow-hidden';
+                    
+                    // Days from previous month
+                    if (i < firstDay) {
+                        const prevDay = prevMonthDays - (firstDay - i - 1);
+                        dayElement.innerHTML = `<div class="text-right text-gray-400">${prevDay}</div>`;
+                        dayElement.classList.add('bg-gray-50');
+                    } 
+                    // Days in current month
+                    else if (dayCount <= daysInMonth) {
+                        const thisDate = new Date(currentYear, currentMonth, dayCount);
+                        const isToday = isSameDay(thisDate, new Date());
+                        
+                        dayElement.innerHTML = `
+                            <div class="text-right ${isToday ? 'bg-indigo-600 text-white rounded-full w-6 h-6 flex items-center justify-center ml-auto' : ''}">${dayCount}</div>
+                            <div class="text-xs mt-1 space-y-1 max-h-16 overflow-y-auto"></div>
+                        `;
+                        
+                        // Add events for this day
+                        const eventsContainer = dayElement.querySelector('div.text-xs');
+                        const dayEvents = getEventsForDate(thisDate);
+                        
+                        if (dayEvents.length > 0) {
+                            dayEvents.forEach(event => {
+                                const eventElement = document.createElement('div');
+                                eventElement.className = `px-1 py-0.5 rounded truncate cursor-pointer ${getEventColorClass(event.type)}`;
+                                eventElement.textContent = event.title;
+                                eventElement.addEventListener('click', () => openEventModal(event));
+                                eventsContainer.appendChild(eventElement);
+                            });
+                        }
+                        
+                        dayElement.addEventListener('click', () => {
+                            if (isTeacherView) {
+                                const formattedDate = formatDateForInput(thisDate);
+                                document.getElementById('eventDate').value = formattedDate;
+                            }
+                        });
+                        
+                        dayCount++;
+                    } 
+                    // Days from next month
+                    else {
+                        dayElement.innerHTML = `<div class="text-right text-gray-400">${nextMonthDayCount}</div>`;
+                        dayElement.classList.add('bg-gray-50');
+                        nextMonthDayCount++;
+                    }
+                    
+                    calendarDays.appendChild(dayElement);
+                }
+            }
+
+            // Get events for a specific date
+            function getEventsForDate(date) {
+                return events.filter(event => {
+                    const eventDate = new Date(event.date);
+                    return isSameDay(eventDate, date);
+                });
+            }
+
+            // Check if two dates are the same day
+            function isSameDay(date1, date2) {
+                return date1.getFullYear() === date2.getFullYear() &&
+                       date1.getMonth() === date2.getMonth() &&
+                       date1.getDate() === date2.getDate();
+            }
+
+            // Format date for input field
+            function formatDateForInput(date) {
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                return `${year}-${month}-${day}`;
+            }
+
+            // Get color class based on event type
+            function getEventColorClass(type) {
+                const colors = {
+                    'lecture': 'bg-blue-100 text-blue-800',
+                    'workshop': 'bg-purple-100 text-purple-800',
+                    'exam': 'bg-red-100 text-red-800',
+                    'office-hours': 'bg-green-100 text-green-800',
+                    'group-study': 'bg-yellow-100 text-yellow-800'
+                };
+                return colors[type] || 'bg-gray-100 text-gray-800';
+            }
+
+            // Render today's events
+            function renderTodaysEvents() {
+                const today = new Date();
+                const todaysEvents = getEventsForDate(today);
+                
+                todaysEventsList.innerHTML = '';
+                
+                if (todaysEvents.length === 0) {
+                    todaysEventsList.innerHTML = '<div class="text-center text-gray-500 py-4">No events scheduled for today</div>';
+                    return;
+                }
+                
+                todaysEvents.forEach(event => {
+                    const eventElement = createEventElement(event);
+                    todaysEventsList.appendChild(eventElement);
+                });
+            }
+
+            // Render upcoming events (for students)
+            function renderUpcomingEvents() {
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                
+                const upcomingEvents = events.filter(event => {
+                    const eventDate = new Date(event.date);
+                    return eventDate >= today;
+                }).sort((a, b) => new Date(a.date) - new Date(b.date));
+                
+                upcomingEventsList.innerHTML = '';
+                
+                if (upcomingEvents.length === 0) {
+                    upcomingEventsList.innerHTML = '<div class="text-center text-gray-500 py-4">No upcoming events</div>';
+                    return;
+                }
+                
+                // Show only the next 5 events to avoid overflow
+                const eventsToShow = upcomingEvents.slice(0, 5);
+                
+                eventsToShow.forEach(event => {
+                    const eventElement = createEventElement(event);
+                    upcomingEventsList.appendChild(eventElement);
+                });
+                
+                if (upcomingEvents.length > 5) {
+                    const moreEventsElement = document.createElement('div');
+                    moreEventsElement.className = 'text-center text-indigo-600 font-medium mt-2';
+                    moreEventsElement.textContent = `+${upcomingEvents.length - 5} more events`;
+                    upcomingEventsList.appendChild(moreEventsElement);
+                }
+            }
+
+            // Create an event element for listing
+            function createEventElement(event) {
+                const eventDate = new Date(event.date);
+                const timeString = event.time.substring(0, 5);
+                
+                const eventElement = document.createElement('div');
+                eventElement.className = 'p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer';
+                eventElement.addEventListener('click', () => openEventModal(event));
+                
+                eventElement.innerHTML = `
+                    <div class="flex justify-between items-start">
+                        <h4 class="font-medium text-gray-800">${event.title}</h4>
+                        <span class="text-xs px-2 py-1 rounded-full ${getEventColorClass(event.type)}">${event.type}</span>
+                    </div>
+                    <div class="mt-1 text-sm text-gray-600">
+                        <div><i class="far fa-calendar-alt mr-2"></i>${eventDate.toLocaleDateString()}</div>
+                        <div><i class="far fa-clock mr-2"></i>${timeString} (${event.duration} mins)</div>
+                    </div>
+                `;
+                
+                return eventElement;
+            }
+
+            // Open event modal
+            function openEventModal(event) {
+                selectedEvent = event;
+                const eventDate = new Date(event.date);
+                const formattedDate = eventDate.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+                const timeString = event.time.substring(0, 5);
+                
+                // Set modal content
+                modalEventTitle.textContent = event.title;
+                modalEventDateTime.textContent = `${formattedDate} at ${timeString}`;
+                modalEventDuration.textContent = `${event.duration} minutes`;
+                modalEventType.textContent = event.type;
+                modalEventDescription.textContent = event.description || 'No description provided.';
+                
+                // Show participants if they exist
+                if (event.participants && event.participants.length > 0) {
+                    modalEventParticipants.textContent = event.participants.join(', ');
+                    modalEventParticipantsContainer.classList.remove('hidden');
+                } else {
+                    modalEventParticipantsContainer.classList.add('hidden');
+                }
+                
+                // Show appropriate buttons
+                deleteEventBtn.classList.toggle('hidden', !isTeacherView);
+                joinEventBtn.classList.toggle('hidden', isTeacherView);
+                
+                // Show modal
+                eventModal.classList.remove('hidden');
+            }
+
+            // Close event modal
+            function closeEventModal() {
+                eventModal.classList.add('hidden');
+                selectedEvent = null;
+            }
+
+            // Switch to teacher view
+            function switchToTeacherView() {
+                isTeacherView = true;
+                teacherViewBtn.classList.add('bg-indigo-600', 'text-white');
+                teacherViewBtn.classList.remove('bg-white', 'text-gray-700');
+                studentViewBtn.classList.add('bg-white', 'text-gray-700');
+                studentViewBtn.classList.remove('bg-indigo-600', 'text-white');
+                
+                teacherForm.classList.remove('hidden');
+                studentEvents.classList.add('hidden');
+            }
+
+            // Switch to student view
+            function switchToStudentView() {
+                isTeacherView = false;
+                studentViewBtn.classList.add('bg-indigo-600', 'text-white');
+                studentViewBtn.classList.remove('bg-white', 'text-gray-700');
+                teacherViewBtn.classList.add('bg-white', 'text-gray-700');
+                teacherViewBtn.classList.remove('bg-indigo-600', 'text-white');
+                
+                teacherForm.classList.add('hidden');
+                studentEvents.classList.remove('hidden');
+                
+                renderUpcomingEvents();
+            }
+
+            // Save events to localStorage
+            function saveEvents() {
+                localStorage.setItem('studyPlatformEvents', JSON.stringify(events));
+            }
+
+            // Event listeners
+            prevMonthBtn.addEventListener('click', () => {
+                currentMonth--;
+                if (currentMonth < 0) {
+                    currentMonth = 11;
+                    currentYear--;
+                }
+                renderCalendar();
+            });
+
+            nextMonthBtn.addEventListener('click', () => {
+                currentMonth++;
+                if (currentMonth > 11) {
+                    currentMonth = 0;
+                    currentYear++;
+                }
+                renderCalendar();
+            });
+
+            todayBtn.addEventListener('click', () => {
+                currentDate = new Date();
+                currentMonth = currentDate.getMonth();
+                currentYear = currentDate.getFullYear();
+                renderCalendar();
+                renderTodaysEvents();
+                if (!isTeacherView) {
+                    renderUpcomingEvents();
+                }
+            });
+
+            eventForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                
+                const title = document.getElementById('eventTitle').value;
+                const description = document.getElementById('eventDescription').value;
+                const date = document.getElementById('eventDate').value;
+                const time = document.getElementById('eventTime').value;
+                const duration = document.getElementById('eventDuration').value;
+                const type = document.getElementById('eventType').value;
+                const participants = Array.from(document.getElementById('eventParticipants').selectedOptions).map(opt => opt.value);
+                
+                const newEvent = {
+                    id: Date.now().toString(),
+                    title,
+                    description,
+                    date,
+                    time,
+                    duration,
+                    type,
+                    participants
+                };
+                
+                events.push(newEvent);
+                saveEvents();
+                
+                // Reset form
+                eventForm.reset();
+                
+                // Update UI
+                renderCalendar();
+                renderTodaysEvents();
+                
+                // Show success message
+                alert('Event scheduled successfully!');
+            });
+
+            studentViewBtn.addEventListener('click', switchToStudentView);
+            teacherViewBtn.addEventListener('click', switchToTeacherView);
+
+            closeModal.addEventListener('click', closeEventModal);
+            closeModalBtn.addEventListener('click', closeEventModal);
+
+            deleteEventBtn.addEventListener('click', () => {
+                if (selectedEvent) {
+                    if (confirm('Are you sure you want to delete this event?')) {
+                        events = events.filter(e => e.id !== selectedEvent.id);
+                        saveEvents();
+                        closeEventModal();
+                        renderCalendar();
+                        renderTodaysEvents();
+                        if (!isTeacherView) {
+                            renderUpcomingEvents();
+                        }
+                    }
+                }
+            });
+
+            joinEventBtn.addEventListener('click', () => {
+                if (selectedEvent) {
+                    alert(`Joining event: ${selectedEvent.title}\nThis would typically redirect to a video meeting or class session.`);
+                    closeEventModal();
+                }
+            });
+
+            // Initialize with current date in the form
+            document.getElementById('eventDate').value = formatDateForInput(new Date());
+            
+            // Set default time to next full hour
+            const now = new Date();
+            const nextHour = now.getHours() + 1;
+            document.getElementById('eventTime').value = `${String(nextHour).padStart(2, '0')}:00`;
+            
+            // Initialize the app
+            initCalendar();
+        });
+    </script>
+</body>
+</html>
